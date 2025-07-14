@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.test.webhook.project.payloads.EndpointDTO;
 import com.test.webhook.project.service.EndpointService;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @RestController
 public class EndpointController {
 
@@ -17,8 +19,9 @@ public class EndpointController {
     private EndpointService endpointService;
 
     @PostMapping("/api/endpoints")
-    public ResponseEntity<EndpointDTO> createEndpoint(@RequestBody EndpointDTO endpointDTO) {
-        EndpointDTO savedEndpointDTO = endpointService.createEndpoint(endpointDTO);
+    public ResponseEntity<EndpointDTO> createEndpoint(@RequestBody EndpointDTO endpointDTO,
+                                                       HttpServletRequest request) {
+        EndpointDTO savedEndpointDTO = endpointService.createEndpoint(endpointDTO, request);
         return new ResponseEntity<>(savedEndpointDTO, HttpStatus.CREATED);
     }
 }
