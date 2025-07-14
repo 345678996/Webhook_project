@@ -21,7 +21,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Endpoints {
+public class Endpoint {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long endpointId;
@@ -41,7 +41,7 @@ public class Endpoints {
         description = "test endpoint";
         }
     }
-    
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
