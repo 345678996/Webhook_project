@@ -1,7 +1,6 @@
 package com.test.webhook.project.service;
 
 import java.util.List;
-import java.util.Locale.Category;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.test.webhook.project.exceptions.APIException;
+import com.test.webhook.project.exceptions.ResourceNotFoundException;
 import com.test.webhook.project.model.Endpoint;
 import com.test.webhook.project.payloads.EndpointDTO;
 import com.test.webhook.project.payloads.EndpointResponse;
@@ -78,6 +78,21 @@ public class EndpointServiceImpl implements EndpointService{
         endpointResponse.setLastPage(endpointPage.isLast());
         return endpointResponse;
     }
+
+    @Override
+    public EndpointDTO searchEndpointById(Long endpointId, HttpServletRequest request) {
+        Endpoint endpointFromDB = endpointRespository.findById(endpointId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Endpoint","endpointId", endpointId));
+
+        EndpointDTO endpointDTOFromDB = modelMapper.map(endpointFromDB, EndpointDTO.class);
+        String baseURL = request.getScheme() + "://" + request.getServerName()
+               + ":" + request.getServerPort();
+
+        endpointDTOFromDB.setCustomEndpointUrl(baseURL +"/api/"+ endpointDTOFromDB.getEndpointName());
+        
+        return endpointDTOFromDB;
+    }
+
 
     
 

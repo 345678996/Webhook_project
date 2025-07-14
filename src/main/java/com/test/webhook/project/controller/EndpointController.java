@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,6 +41,12 @@ public class EndpointController {
         EndpointResponse endpointResponse = endpointService.getAllEndpoints(pageNumber,pageSize,sortBy,sortOrder,request);
 
         return new ResponseEntity<>(endpointResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/api/endpoints/{endpointId}")
+    public ResponseEntity<EndpointDTO> searchEndpointById(@PathVariable Long endpointId, HttpServletRequest request) {
+        EndpointDTO endpointDTO = endpointService.searchEndpointById(endpointId,request);
+        return new ResponseEntity<>(endpointDTO, HttpStatus.OK);
     }
 
 

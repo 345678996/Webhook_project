@@ -10,4 +10,8 @@ public interface EndpointService {
     EndpointDTO createEndpoint(EndpointDTO endpointDTO, HttpServletRequest request);
 
     EndpointResponse getAllEndpoints(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, HttpServletRequest request);
+
+    EndpointDTO searchEndpointById(Long endpointId, HttpServletRequest request);
+
+
 }
