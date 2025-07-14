@@ -24,4 +24,6 @@ public class EndpointController {
         EndpointDTO savedEndpointDTO = endpointService.createEndpoint(endpointDTO, request);
         return new ResponseEntity<>(savedEndpointDTO, HttpStatus.CREATED);
     }
+
+    
 }

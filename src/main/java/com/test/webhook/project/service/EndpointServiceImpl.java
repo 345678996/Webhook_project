@@ -38,4 +38,6 @@ public class EndpointServiceImpl implements EndpointService{
         return endpointDTOwithCustomUrl;
     }
 
+    
+
 }
