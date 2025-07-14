@@ -99,13 +99,29 @@ public class EndpointServiceImpl implements EndpointService{
         Endpoint endpointFromDB = endpointRespository.findByEndpointName(endpointName)
                     .orElseThrow(() -> new ResourceNotFoundException("Endpoint","endpointName", endpointName));
         
-                    EndpointDTO endpointDTOFromDB = modelMapper.map(endpointFromDB, EndpointDTO.class);
+        EndpointDTO endpointDTOFromDB = modelMapper.map(endpointFromDB, EndpointDTO.class);
         String baseURL = request.getScheme() + "://" + request.getServerName()
                + ":" + request.getServerPort();
 
         endpointDTOFromDB.setCustomEndpointUrl(baseURL +"/api/"+ endpointDTOFromDB.getEndpointName());
         
         return endpointDTOFromDB;
+    }
+
+    @Override
+    public EndpointDTO deleteEndpoint(Long endpointId, HttpServletRequest request) {
+        Endpoint existingEndpoint = endpointRespository.findById(endpointId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Endpoint", "endpointId", endpointId));
+
+        endpointRespository.delete(existingEndpoint);
+
+        EndpointDTO existingEndpointDTO = modelMapper.map(existingEndpoint, EndpointDTO.class);
+        String baseURL = request.getScheme() + "://" + request.getServerName()
+               + ":" + request.getServerPort();
+
+        existingEndpointDTO.setCustomEndpointUrl(baseURL +"/api/"+ existingEndpointDTO.getEndpointName());
+
+        return existingEndpointDTO;
     }
 
 

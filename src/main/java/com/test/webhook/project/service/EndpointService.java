@@ -15,5 +15,7 @@ public interface EndpointService {
 
     EndpointDTO searchEndpointByName(String endpointName, HttpServletRequest request);
 
+    EndpointDTO deleteEndpoint(Long endpointId, HttpServletRequest request);
+
 
 }

@@ -3,6 +3,7 @@ package com.test.webhook.project.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,6 +53,12 @@ public class EndpointController {
     @GetMapping("/api/endpoints/name/{endpointName}")
     public ResponseEntity<EndpointDTO> searchEndpointByName(@PathVariable String endpointName, HttpServletRequest request) {
         EndpointDTO endpointDTO = endpointService.searchEndpointByName(endpointName,request);
+        return new ResponseEntity<>(endpointDTO, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/api/endpoints/{endpointId}")
+    public ResponseEntity<EndpointDTO> deleteEndpoint(@PathVariable Long endpointId, HttpServletRequest request) {
+        EndpointDTO endpointDTO = endpointService.deleteEndpoint(endpointId, request);
         return new ResponseEntity<>(endpointDTO, HttpStatus.OK);
     }
 
