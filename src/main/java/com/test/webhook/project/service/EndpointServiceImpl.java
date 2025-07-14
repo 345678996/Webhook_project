@@ -1,6 +1,7 @@
 package com.test.webhook.project.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,8 @@ public class EndpointServiceImpl implements EndpointService{
     public EndpointDTO createEndpoint(EndpointDTO endpointDTO, HttpServletRequest request) {
         Endpoint endpoint = modelMapper.map(endpointDTO, Endpoint.class);
 
-        Endpoint endpointFromDB = endpointRespository.findByEndpointName(endpoint.getEndpointName());
-        if(endpointFromDB != null) {
+        Optional<Endpoint> endpointFromDB = endpointRespository.findByEndpointName(endpoint.getEndpointName());
+        if(endpointFromDB.isPresent()) {
             throw new APIException("Endpoint with name "+endpointDTO.getEndpointName()+" already exist");
         }
         Endpoint savedEndpoint = endpointRespository.save(endpoint);
@@ -85,6 +86,20 @@ public class EndpointServiceImpl implements EndpointService{
                     .orElseThrow(() -> new ResourceNotFoundException("Endpoint","endpointId", endpointId));
 
         EndpointDTO endpointDTOFromDB = modelMapper.map(endpointFromDB, EndpointDTO.class);
+        String baseURL = request.getScheme() + "://" + request.getServerName()
+               + ":" + request.getServerPort();
+
+        endpointDTOFromDB.setCustomEndpointUrl(baseURL +"/api/"+ endpointDTOFromDB.getEndpointName());
+        
+        return endpointDTOFromDB;
+    }
+
+    @Override
+    public EndpointDTO searchEndpointByName(String endpointName, HttpServletRequest request) {
+        Endpoint endpointFromDB = endpointRespository.findByEndpointName(endpointName)
+                    .orElseThrow(() -> new ResourceNotFoundException("Endpoint","endpointName", endpointName));
+        
+                    EndpointDTO endpointDTOFromDB = modelMapper.map(endpointFromDB, EndpointDTO.class);
         String baseURL = request.getScheme() + "://" + request.getServerName()
                + ":" + request.getServerPort();
 

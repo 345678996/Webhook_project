@@ -49,5 +49,11 @@ public class EndpointController {
         return new ResponseEntity<>(endpointDTO, HttpStatus.OK);
     }
 
+    @GetMapping("/api/endpoints/name/{endpointName}")
+    public ResponseEntity<EndpointDTO> searchEndpointByName(@PathVariable String endpointName, HttpServletRequest request) {
+        EndpointDTO endpointDTO = endpointService.searchEndpointByName(endpointName,request);
+        return new ResponseEntity<>(endpointDTO, HttpStatus.OK);
+    }
+
 
 }
