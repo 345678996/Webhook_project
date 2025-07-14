@@ -1,12 +1,20 @@
 package com.test.webhook.project.service;
 
+import java.util.List;
+import java.util.Locale.Category;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.test.webhook.project.exceptions.APIException;
 import com.test.webhook.project.model.Endpoint;
 import com.test.webhook.project.payloads.EndpointDTO;
+import com.test.webhook.project.payloads.EndpointResponse;
 import com.test.webhook.project.repositories.EndpointRespository;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,6 +44,39 @@ public class EndpointServiceImpl implements EndpointService{
         endpointDTOwithCustomUrl.setCustomEndpointUrl(baseURL +"/api/"+ savedEndpoint.getEndpointName());
        
         return endpointDTOwithCustomUrl;
+    }
+
+    @Override
+    public EndpointResponse getAllEndpoints(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, HttpServletRequest request) {
+        // ---Sorting---
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending(); 
+        // ----Pagenation formula----
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+        Page<Endpoint> endpointPage = endpointRespository.findAll(pageDetails);
+
+        List<Endpoint> endpoints = endpointPage.getContent();
+        if(endpoints.isEmpty()) {
+            throw new APIException("No endpoints created till now");
+        }
+        List<EndpointDTO> endpointDTOs = endpoints.stream()
+                        .map(ep -> modelMapper.map(ep, EndpointDTO.class))
+                        .toList();
+        String baseURL = request.getScheme() + "://" + request.getServerName()
+               + ":" + request.getServerPort();
+
+        endpointDTOs.forEach(endpointdto -> endpointdto.setCustomEndpointUrl(baseURL + "/api/" + endpointdto.getEndpointName()));
+
+
+        EndpointResponse endpointResponse = new EndpointResponse();
+        endpointResponse.setContent(endpointDTOs);
+        endpointResponse.setPageNumber(endpointPage.getNumber());
+        endpointResponse.setPageSize(endpointPage.getSize());
+        endpointResponse.setTotalElements(endpointPage.getTotalElements());
+        endpointResponse.setTotalPages(endpointPage.getTotalPages());
+        endpointResponse.setLastPage(endpointPage.isLast());
+        return endpointResponse;
     }
 
     
