@@ -39,6 +39,8 @@ public class IncomingRequest {
     
     private LocalDateTime receivedAt;
 
+    private String ipAddress;
+
     @ManyToOne
     @JoinColumn(name = "endpoint_id")
     private Endpoint endpoint;

@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.test.webhook.project.payloads.APIResponse;
 
 @RestControllerAdvice
@@ -21,5 +22,12 @@ public class GlobalExceptionHandler {
         String message = e.getMessage();
         return new ResponseEntity<>(new APIResponse(message, false), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(JsonProcessingException.class)
+    public ResponseEntity<APIResponse> handleJsonProcessingException(JsonProcessingException e) {
+        String message = "Failed to process JSON: " + e.getOriginalMessage();
+        return new ResponseEntity<>(new APIResponse(message, false), HttpStatus.BAD_REQUEST);
+    }
+
 
 }
