@@ -26,7 +26,13 @@ public class IncomingRequestController {
     
     @RequestMapping(
         value = "/api/{customEndpoint}",
-        method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH}
+        method = {RequestMethod.GET,
+                 RequestMethod.POST,
+                 RequestMethod.PUT,
+                 RequestMethod.DELETE,
+                 RequestMethod.PATCH,
+                 RequestMethod.OPTIONS,
+                 RequestMethod.HEAD}
     )
     public ResponseEntity<IncomingRequestDTO> handleIncomingRequest(
         @PathVariable String customEndpoint,
