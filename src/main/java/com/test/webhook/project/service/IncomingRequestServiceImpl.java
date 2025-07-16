@@ -1,18 +1,25 @@
 package com.test.webhook.project.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.webhook.project.exceptions.APIException;
+import com.test.webhook.project.exceptions.ResourceNotFoundException;
 import com.test.webhook.project.model.Endpoint;
 import com.test.webhook.project.model.IncomingRequest;
 import com.test.webhook.project.payloads.IncomingRequestDTO;
+import com.test.webhook.project.payloads.IncomingRequestResponse;
 import com.test.webhook.project.repositories.EndpointRespository;
 import com.test.webhook.project.repositories.IncomingRequestRespository;
 
@@ -71,6 +78,57 @@ public class IncomingRequestServiceImpl implements IncomingRequestService{
         incomingRequestDTO.setHeaders(headersMap);
         
         return incomingRequestDTO;
+    }
+
+    @Override
+    public IncomingRequestResponse getIncomingRequestsByEndpointName(Integer pageNumber, Integer pageSize,
+            String sortBy, String sortOrder, HttpServletRequest request, String endpointName) {
+        
+        Endpoint endpoint = endpointRespository.findByEndpointName(endpointName)
+                    .orElseThrow(() -> new ResourceNotFoundException("Endpoint", "endpointName", endpointName));
+
+        // ----Sorting---
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending(); 
+        // ----Pagenation formula----
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+        Page<IncomingRequest> productPage = incomingRequestRespository.findByEndpointOrderByReceivedAtAsc(endpoint, pageDetails);
+
+        List<IncomingRequest> incomingRequests = productPage.getContent();
+        if(incomingRequests.isEmpty()) {
+            throw new APIException("No requests at the specific endpoint");
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        List<IncomingRequestDTO> incomingRequestDTOs = incomingRequests.stream()
+                .map(req -> {
+                    IncomingRequestDTO dto = modelMapper.map(req, IncomingRequestDTO.class);
+                    dto.setEndpointId(req.getEndpoint().getEndpointId());
+                    dto.setEndpointName(req.getEndpoint().getEndpointName());
+                    try {
+                        Map<String, String> headersMap = objectMapper.readValue(
+                            req.getHeaders(),
+                            new com.fasterxml.jackson.core.type.TypeReference<>() {}
+                        );
+                        dto.setHeaders(headersMap);
+                    } catch (JsonProcessingException e) {
+                        dto.setHeaders(null);
+                    }
+                    return dto;
+                })
+                .toList();
+
+        IncomingRequestResponse incomingRequestResponse = new IncomingRequestResponse();
+        incomingRequestResponse.setContent(incomingRequestDTOs);
+        incomingRequestResponse.setPageNumber(productPage.getNumber());
+        incomingRequestResponse.setPageSize(productPage.getSize());
+        incomingRequestResponse.setTotalElements(productPage.getTotalElements());
+        incomingRequestResponse.setTotalPages(productPage.getTotalPages());
+        incomingRequestResponse.setLastPage(productPage.isLast());
+        
+        return incomingRequestResponse;
     }
 
 }
