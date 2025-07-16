@@ -131,4 +131,29 @@ public class IncomingRequestServiceImpl implements IncomingRequestService{
         return incomingRequestResponse;
     }
 
+    @Override
+    public IncomingRequestDTO getSingleRequestForEndpoint(HttpServletRequest request, String endpointName, Long requestId) {
+        Endpoint endpoint = endpointRespository.findByEndpointName(endpointName)
+                    .orElseThrow(() -> new ResourceNotFoundException("Endpoint", "endpointName", endpointName));
+
+        IncomingRequest incomingRequest = incomingRequestRespository.findByRequestIdAndEndpoint(requestId, endpoint)
+                    .orElseThrow(() -> new ResourceNotFoundException("Request", "requestId", requestId));
+
+        IncomingRequestDTO incomingRequestDTO = modelMapper.map(incomingRequest, IncomingRequestDTO.class);
+
+        // Deserialize headers JSON back into Map<String, String>
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            Map<String, String> headersMap = objectMapper.readValue(
+                incomingRequest.getHeaders(),
+                new com.fasterxml.jackson.core.type.TypeReference<>() {}
+            );
+            incomingRequestDTO.setHeaders(headersMap);
+        } catch (JsonProcessingException e) {
+            incomingRequestDTO.setHeaders(null);
+        }
+
+        return incomingRequestDTO;
+}
+
 }

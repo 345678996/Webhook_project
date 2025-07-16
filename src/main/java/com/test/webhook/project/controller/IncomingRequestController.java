@@ -54,7 +54,7 @@ public class IncomingRequestController {
     public ResponseEntity<IncomingRequestResponse> getIncomingRequestsByEndpointName(
         @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
         @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageSize,
-        @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_ENDPOINT_BY, required = false) String sortBy,
+        @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_INCOMINGREQUEST_BY, required = false) String sortBy,
         @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder,
         HttpServletRequest request,
         @PathVariable String endpointName
@@ -67,6 +67,20 @@ public class IncomingRequestController {
                                                 request,
                                                 endpointName
                                             );
-        return new ResponseEntity<>(response,HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/api/endpoints/{endpointName}/requests/{requestId}")
+    public ResponseEntity<IncomingRequestDTO> getSingleRequestForEndpoint(
+        HttpServletRequest request,
+        @PathVariable String endpointName,
+        @PathVariable Long requestId
+    ) {
+        IncomingRequestDTO responseDTO = incomingRequestService.getSingleRequestForEndpoint(
+                                                request,
+                                                endpointName,
+                                                requestId
+                                            );
+        return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 }

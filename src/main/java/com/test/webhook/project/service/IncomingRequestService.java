@@ -15,4 +15,6 @@ public interface IncomingRequestService {
     IncomingRequestResponse getIncomingRequestsByEndpointName(Integer pageNumber, Integer pageSize, String sortBy,
             String sortOrder, HttpServletRequest request, String endpointName);
 
+    IncomingRequestDTO getSingleRequestForEndpoint(HttpServletRequest request, String endpointName, Long requestId);
+
 }
