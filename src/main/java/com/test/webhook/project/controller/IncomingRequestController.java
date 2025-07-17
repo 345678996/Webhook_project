@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.test.webhook.project.configurations.AppConstants;
+import com.test.webhook.project.payloads.APIResponse;
 import com.test.webhook.project.payloads.IncomingRequestDTO;
 import com.test.webhook.project.payloads.IncomingRequestResponse;
 import com.test.webhook.project.service.IncomingRequestService;
@@ -72,9 +74,9 @@ public class IncomingRequestController {
 
     @GetMapping("/api/endpoints/{endpointName}/requests/{requestId}")
     public ResponseEntity<IncomingRequestDTO> getSingleRequestForEndpoint(
-        HttpServletRequest request,
-        @PathVariable String endpointName,
-        @PathVariable Long requestId
+                            HttpServletRequest request,
+                            @PathVariable String endpointName,
+                            @PathVariable Long requestId
     ) {
         IncomingRequestDTO responseDTO = incomingRequestService.getSingleRequestForEndpoint(
                                                 request,
@@ -82,5 +84,13 @@ public class IncomingRequestController {
                                                 requestId
                                             );
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/api/endpoints/{endpointName}/requests")
+    public ResponseEntity<APIResponse> deleteAllRequestForEndpoint(
+                            @PathVariable String endpointName,
+                            HttpServletRequest request) {
+        incomingRequestService.deleteAllRequestForEndpoint(endpointName, request);
+        return new ResponseEntity<>(new APIResponse("All request deleted for the endpoint: "+endpointName, true), HttpStatus.OK);
     }
 }

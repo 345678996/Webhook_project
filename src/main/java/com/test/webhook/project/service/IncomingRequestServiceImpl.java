@@ -154,6 +154,19 @@ public class IncomingRequestServiceImpl implements IncomingRequestService{
         }
 
         return incomingRequestDTO;
-}
+    }
+
+    @Override
+    public void deleteAllRequestForEndpoint(String endpointName, HttpServletRequest request) {
+        Endpoint endpoint = endpointRespository.findByEndpointName(endpointName)
+                    .orElseThrow(() -> new ResourceNotFoundException("Endpoint", "endpointName", endpointName));
+
+        List<IncomingRequest> incomingRequests = incomingRequestRespository.findByEndpointOrderByReceivedAtAsc(endpoint);
+        if(incomingRequests.isEmpty()) {
+            throw new APIException("No request found at this endpoint");
+        }
+         
+        incomingRequestRespository.deleteAll(incomingRequests);
+    }
 
 }

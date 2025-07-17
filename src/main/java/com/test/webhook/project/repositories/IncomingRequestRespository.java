@@ -1,5 +1,6 @@
 package com.test.webhook.project.repositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -16,5 +17,7 @@ public interface IncomingRequestRespository extends JpaRepository<IncomingReques
     Page<IncomingRequest> findByEndpointOrderByReceivedAtAsc(Endpoint endpoint, Pageable pageDetails);
 
     Optional<IncomingRequest> findByRequestIdAndEndpoint(Long requestId, Endpoint endpoint);
+
+    List<IncomingRequest> findByEndpointOrderByReceivedAtAsc(Endpoint endpoint);
 
 }
