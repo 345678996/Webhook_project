@@ -19,4 +19,6 @@ public interface IncomingRequestService {
 
     void deleteAllRequestForEndpoint(String endpointName, HttpServletRequest request);
 
+    IncomingRequestDTO deleteRequestForEndpoint(String endpointName, Long requestId, HttpServletRequest request);
+
 }

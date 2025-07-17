@@ -169,4 +169,30 @@ public class IncomingRequestServiceImpl implements IncomingRequestService{
         incomingRequestRespository.deleteAll(incomingRequests);
     }
 
+    @Override
+    public IncomingRequestDTO deleteRequestForEndpoint(String endpointName, Long requestId,
+            HttpServletRequest request) {
+        Endpoint endpoint = endpointRespository.findByEndpointName(endpointName)
+                    .orElseThrow(() -> new ResourceNotFoundException("Endpoint", "endpointName", endpointName));
+
+        IncomingRequest incomingRequest = incomingRequestRespository.findById(requestId)
+                            .orElseThrow(() -> new ResourceNotFoundException("Request", "requestId", requestId));
+        incomingRequestRespository.delete(incomingRequest);
+
+        IncomingRequestDTO deletedRequestDTO = modelMapper.map(incomingRequest, IncomingRequestDTO.class);
+        // Deserialize headers JSON back into Map<String, String>
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            Map<String, String> headersMap = objectMapper.readValue(
+                incomingRequest.getHeaders(),
+                new com.fasterxml.jackson.core.type.TypeReference<>() {}
+            );
+            deletedRequestDTO.setHeaders(headersMap);
+        } catch (JsonProcessingException e) {
+            deletedRequestDTO.setHeaders(null);
+        }
+        
+        return deletedRequestDTO;
+    }
+
 }
