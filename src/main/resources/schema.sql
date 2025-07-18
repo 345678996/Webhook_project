@@ -34,6 +34,6 @@ CREATE TABLE IF NOT EXISTS `users` (
   `created_by` varchar(200) DEFAULT NULL,
   `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updated_by` varchar(200) DEFAULT NULL,
-  `updated_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

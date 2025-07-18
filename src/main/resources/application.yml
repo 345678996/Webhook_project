@@ -8,8 +8,8 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/webhook
     driverClassName: com.mysql.cj.jdbc.Driver
-    username: root
-    password: 'sa@123'
+    username: "root"
+    password: "kanav007"
   sql:
     init:
       mode: always
@@ -21,6 +21,4 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.MySQL8Dialect
-  
-
+        dialect: org.hibernate.dialect.MySQLDialect
